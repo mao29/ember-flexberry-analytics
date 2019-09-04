@@ -1,0 +1,37 @@
+---
+language: node_js
+node_js:
+  - "6"
+
+sudo: required
+
+cache:
+  yarn: true
+  directories:
+    - $HOME/.npm
+    - $HOME/.cache
+
+env:
+  - EMBER_TRY_SCENARIO=default
+
+matrix:
+  fast_finish: true
+    
+dist: trusty
+    
+addons:
+  chrome: stable
+
+before_install:
+  - sudo chown root /opt/google/chrome/chrome-sandbox
+  - sudo chmod 4755 /opt/google/chrome/chrome-sandbox
+  - yarn global add ember-cli@2.4.3
+  - yarn global add bower
+  - google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 http://localhost &
+
+install:
+  - yarn install --no-lockfile
+  - bower install
+
+script:
+  - ember try $EMBER_TRY_SCENARIO test
