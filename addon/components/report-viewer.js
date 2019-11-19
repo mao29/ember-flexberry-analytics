@@ -171,6 +171,13 @@ export default Ember.Component.extend({
    * @default undefined
    */
   onErrorFunction: undefined,
+  /**
+   * Флаг, отображающий необходимость вызвать построение отчета.
+   * @property needRefresh
+   * @type Boolean
+   * @default false
+   */
+  needRefresh: false,
 
   init() {
     this._super();
@@ -183,7 +190,6 @@ export default Ember.Component.extend({
       csv: 'table/csv;page-mode=stream',
       xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;page-mode=flow',
     });
-
   },
   /**
    * Метод для получения разметки отчёта из сервиса.
@@ -233,6 +239,17 @@ export default Ember.Component.extend({
   reportPagesCountObservation: Ember.observer('reportPagesCount', function () {
     if (this.get('reportCurrentPage') !== this.get('reportPagesCount')) {
       this.set('isNextButtonDisabled', false);
+    }
+  }),
+
+  /**
+   * Слушатель изменений флага на необходимость перестроить отчет.
+   * @method reportRefreshObservation
+   */
+  reportRefreshObservation: Ember.observer('needRefresh', function () {
+    if (this.get('needRefresh') === true) {
+      this.send('buildReport');
+      this.set('needRefresh', false);
     }
   }),
 
